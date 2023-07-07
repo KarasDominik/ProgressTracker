@@ -1,8 +1,7 @@
 package pl.karasdominik.progressTracker;
 
+import jakarta.persistence.*;
 import lombok.*;
-
-import javax.persistence.*;
 
 @Entity
 @Table(name = "users")
@@ -16,7 +15,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private int userID;
 
     @NonNull
     private String username;

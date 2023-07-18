@@ -14,31 +14,24 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-public class UserService{
-
-    int MIN_NUMBER_OF_CHARACTERS_FOR_USERNAME = 6;
-    int MAX_NUMBER_OF_CHARACTERS_FOR_USERNAME = 15;
-
-    @Autowired
-    UserRepository userRepository;
+public class UserService {
 
     @Autowired
     ObjectMapper objectMapper;
 
-    @GetMapping("/users")
-    public ResponseEntity getUsers() throws JsonProcessingException {
-        List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(objectMapper.writeValueAsString(users));
-    }
+    @Autowired
+    UserRepository userRepository;
 
     @PostMapping("/users")
-    public ResponseEntity addUser(@RequestBody User user){
+    public ResponseEntity addUser(@RequestBody User user) {
+
+        InputValidator inputValidator = new InputValidator();
 
         if(!isUsernameUnique(user)){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         }
 
-        if(!isUsernameValid(user)){
+        if(!inputValidator.isUsernameAndPasswordValid(user)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -46,22 +39,16 @@ public class UserService{
         return ResponseEntity.ok(savedUser);
     }
 
-    private boolean isUsernameUnique(User user){
+    public boolean isUsernameUnique(User user) {
         Optional<User> userFromDb = userRepository.findByUsername(user.getUsername());
         return userFromDb.isEmpty();
     }
 
-    private boolean isUsernameValid(User user){
-        String username = user.getUsername();
-        return hasAppropriateNumberOfCharacters(username) && containsOnlyAllowedCharacters(username);
-    }
-
-    private boolean hasAppropriateNumberOfCharacters(String username){
-        return username.length() >= MIN_NUMBER_OF_CHARACTERS_FOR_USERNAME &&
-                username.length() <= MAX_NUMBER_OF_CHARACTERS_FOR_USERNAME;
-    }
-
-    private boolean containsOnlyAllowedCharacters(String username){
-        return InputValidator.isLoginValid(username);
+    @GetMapping("/users")
+    public ResponseEntity getUsers() throws JsonProcessingException {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(objectMapper.writeValueAsString(users));
     }
 }
+
+

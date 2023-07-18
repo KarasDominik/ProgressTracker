@@ -4,14 +4,27 @@ import java.util.regex.Pattern;
 
 public class InputValidator {
 
+    private static final int MIN_NUMBER_OF_CHARACTERS_FOR_INPUT = 6;
+    private static final int MAX_NUMBER_OF_CHARACTERS_FOR_INPUT = 15;
+
     private static final String ALLOWED_CHARACTERS_PATTERN = "^[a-zA-Z0-9!@#$%^&*()_+-]+$";
     private static final Pattern pattern = Pattern.compile(ALLOWED_CHARACTERS_PATTERN);
 
-    public static boolean isLoginValid(String login) {
-        return pattern.matcher(login).matches();
+    public boolean isUsernameAndPasswordValid(User user){
+        return isInputValid(user.getUsername()) && isInputValid(user.getPassword());
     }
 
-    public static boolean isPasswordValid(String password) {
-        return pattern.matcher(password).matches();
+    private boolean isInputValid(String input) {
+        return hasAppropriateNumberOfCharacters(input) && containsOnlyAllowedCharacters(input);
+    }
+
+    private boolean hasAppropriateNumberOfCharacters(String input){
+        return input.length() >= MIN_NUMBER_OF_CHARACTERS_FOR_INPUT &&
+                input.length() <= MAX_NUMBER_OF_CHARACTERS_FOR_INPUT;
+    }
+
+    private boolean containsOnlyAllowedCharacters(String input){
+        return pattern.matcher(input).matches();
     }
 }
+

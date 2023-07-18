@@ -1,15 +1,83 @@
 package pl.karasdominik.progressTracker;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-class InputValidatorTest {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-    @org.junit.jupiter.api.Test
-    void isLoginValid() {
+public class InputValidatorTest {
 
+    private static User user;
+    private static InputValidator testedValidator;
+
+    @BeforeClass
+    public static void createUser(){
+        user = new User();
+        testedValidator = new InputValidator();
     }
 
-    @org.junit.jupiter.api.Test
-    void isPasswordValid() {
+    @Test
+    public void canCreateUserWithoutLogin(){
+        user.setUsername("");
+        user.setPassword("ValidPassword");
+
+        assertFalse(testedValidator.isUsernameAndPasswordValid(user));
+    }
+
+    @Test
+    public void canCreateUserWithoutPassword(){
+        user.setUsername("ValidLogin");
+        user.setPassword(" ");
+
+        assertFalse(testedValidator.isUsernameAndPasswordValid(user));
+    }
+
+    @Test
+    public void canCreateUsernameWithPolishCharacters(){
+        user.setUsername("Usernameźćę");
+        user.setPassword("ValidPassword");
+
+        assertFalse(testedValidator.isUsernameAndPasswordValid(user));
+    }
+
+    @Test
+    public void canCreateUserWithTwoCharactersUsername(){
+        user.setUsername("do");
+        user.setPassword("ValidPassword");
+
+        assertFalse(testedValidator.isUsernameAndPasswordValid(user));
+    }
+
+    @Test
+    public void canCreateUserWithThirtyCharactersUsername(){
+        user.setUsername("UserUserUserUserUserUserUserUs");
+        user.setPassword("ValidPassword");
+
+        assertFalse(testedValidator.isUsernameAndPasswordValid(user));
+    }
+
+    @Test
+    public void canCreateUserWithThreeCharactersPassword(){
+        user.setUsername("ValidUsername");
+        user.setPassword("Pass");
+
+        assertFalse(testedValidator.isUsernameAndPasswordValid(user));
+    }
+
+    @Test
+    public void canCreateUserWithThirtyCharactersPassword(){
+        user.setUsername("ValidUsername");
+        user.setPassword("PasswPasswPasswPasswPasswPassw");
+
+        assertFalse(testedValidator.isUsernameAndPasswordValid(user));
+    }
+
+    @Test
+    public void canCreateUserWithValidCredentails(){
+        user.setUsername("validUsername");
+        user.setPassword("validPassword");
+
+        assertTrue(testedValidator.isUsernameAndPasswordValid(user));
     }
 }

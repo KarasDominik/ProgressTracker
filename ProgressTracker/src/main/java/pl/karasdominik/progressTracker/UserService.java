@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class UserService {
@@ -22,12 +21,13 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    InputValidator inputValidator;
+
     @PostMapping("/users")
     public ResponseEntity addUser(@RequestBody User user) {
 
-        InputValidator inputValidator = new InputValidator();
-
-        if(!isUsernameUnique(user)){
+        if(!inputValidator.isUsernameUnique(user)){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         }
 
@@ -37,11 +37,6 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
-    }
-
-    public boolean isUsernameUnique(User user) {
-        Optional<User> userFromDb = userRepository.findByUsername(user.getUsername());
-        return userFromDb.isEmpty();
     }
 
     @GetMapping("/users")

@@ -3,10 +3,10 @@ package pl.karasdominik.progressTracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UserService {
@@ -45,6 +45,33 @@ public class UserService {
         if(userAuthenticationService.isUsernameAndPasswordCorrect(user)) return ResponseEntity.ok(user);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @GetMapping("/users")
+    public List<User> getAll(){
+        return userRepository.findAll();
+    }
+
+    @DeleteMapping("/delete")
+    public void deleteUserById(Long id){
+        userRepository.deleteById(id);
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity changeUserPassword(@RequestBody User user){
+        if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        Optional<User> userFromDb = userRepository.findByUsername(user.getUsername());
+
+        if(userFromDb.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        User existingUser = userFromDb.get();
+        existingUser.setPassword(user.getPassword());
+
+        User savedUser = userRepository.save(existingUser);
+        return ResponseEntity.ok(savedUser);
     }
 }
 

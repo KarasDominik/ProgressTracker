@@ -1,19 +1,15 @@
 package pl.karasdominik.progressTracker;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class UserService {
-
-    @Autowired
-    ObjectMapper objectMapper;
 
     @Autowired
     UserRepository userRepository;
@@ -21,16 +17,19 @@ public class UserService {
     @Autowired
     InputValidator inputValidator;
 
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/users")
-    public ResponseEntity addUser(@RequestBody User user) {
+    @Autowired
+    UserAuthenticationService userAuthenticationService;
 
-        if(!inputValidator.isUsernameUnique(user)){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
-        }
+    @CrossOrigin(origins = "http://localhost:3000")
+    @PostMapping("/register")
+    public ResponseEntity registerUser(@RequestBody User user) {
 
         if(!inputValidator.isUsernameAndPasswordValid(user)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        if(!userAuthenticationService.isUsernameUnique(user)){
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         }
 
         User savedUser = userRepository.save(user);
@@ -38,10 +37,14 @@ public class UserService {
     }
 
     @CrossOrigin(origins = "http://localhost:3000")
-    @GetMapping("/users")
-    public ResponseEntity getUsers() throws JsonProcessingException {
-        List<User> users = userRepository.findAll();
-        return ResponseEntity.ok(objectMapper.writeValueAsString(users));
+    @PostMapping("/login")
+    public ResponseEntity logUserIn(@RequestBody User user){
+
+        if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
+
+        if(userAuthenticationService.isUsernameAndPasswordCorrect(user)) return ResponseEntity.ok(user);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }
 

@@ -1,9 +1,7 @@
 package pl.karasdominik.progressTracker;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Component
@@ -14,9 +12,6 @@ public class InputValidator {
 
     private static final String ALLOWED_CHARACTERS_PATTERN = "^[a-zA-Z0-9!@#$%^&*()_+-]+$";
     private static final Pattern pattern = Pattern.compile(ALLOWED_CHARACTERS_PATTERN);
-
-    @Autowired
-    UserRepository userRepository;
 
     public boolean isUsernameAndPasswordValid(User user){
         return isInputValid(user.getUsername()) && isInputValid(user.getPassword());
@@ -33,11 +28,6 @@ public class InputValidator {
 
     private boolean containsOnlyAllowedCharacters(String input){
         return pattern.matcher(input).matches();
-    }
-
-    public boolean isUsernameUnique(User user) {
-        Optional<User> userFromDb = userRepository.findByUsername(user.getUsername());
-        return userFromDb.isEmpty();
     }
 }
 

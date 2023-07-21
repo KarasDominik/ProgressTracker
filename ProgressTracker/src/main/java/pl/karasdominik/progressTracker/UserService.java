@@ -38,7 +38,7 @@ public class UserService {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/login")
-    public ResponseEntity logUserIn(@RequestBody User user){
+    public ResponseEntity<User> logUserIn(@RequestBody User user){
 
         if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 
@@ -60,7 +60,7 @@ public class UserService {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity changeUserPassword(@RequestBody User user){
+    public ResponseEntity<User> changeUserPassword(@RequestBody User user){
         if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
         Optional<User> userFromDb = userRepository.findByUsername(user.getUsername());

@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 class UserServiceTest {
 
@@ -59,6 +59,31 @@ class UserServiceTest {
     }
 
     @Test
+    void testLogUserInWhenCredentialsAreCorrect(){
+        User existingUser = new User("validUsername", "validPassword");
+
+        when(inputValidator.isUsernameAndPasswordValid(existingUser)).thenReturn(true);
+        when(userAuthenticationService.isUsernameAndPasswordCorrect(existingUser)).thenReturn(true);
+
+        ResponseEntity<User> response = userService.logUserIn(existingUser);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(existingUser, response.getBody());
+    }
+
+    @Test
+    void testLogUserInWhenCredentialsAreNotCorrect(){
+        User nonExistingUser = new User("invalidUsername", "invalidPassword");
+
+        when(inputValidator.isUsernameAndPasswordValid(nonExistingUser)).thenReturn(true);
+        when(userAuthenticationService.isUsernameAndPasswordCorrect(nonExistingUser)).thenReturn(false);
+
+        ResponseEntity<User> response = userService.logUserIn(nonExistingUser);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
     void testDeleteUserById(){
         Long idOfUserToDelete = 1L;
 
@@ -76,5 +101,28 @@ class UserServiceTest {
         when(userRepository.findById(idOfUserToDelete)).thenReturn(Optional.empty());
 
         assertFalse(userService.deleteUserById(idOfUserToDelete));
+    }
+
+    @Test
+    void testChangeUserPasswordWhenUserDoesExist(){
+        User validUser = new User("validUser", "newPassword");
+
+        when(inputValidator.isUsernameAndPasswordValid(validUser)).thenReturn(true);
+        when(userRepository.findByUsername(validUser.getUsername())).thenReturn(Optional.of(validUser));
+        ResponseEntity<User> response = userService.changeUserPassword(validUser);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void testChangeUserPasswordWhenUserDoesNotExist(){
+        User invalidUser = new User("invalidUser", "password");
+
+        when(inputValidator.isUsernameAndPasswordValid(invalidUser)).thenReturn(true);
+        when(userRepository.findByUsername(invalidUser.getUsername())).thenReturn(Optional.empty());
+
+        ResponseEntity<User> response = userService.changeUserPassword(invalidUser);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }

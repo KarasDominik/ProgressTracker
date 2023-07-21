@@ -22,7 +22,7 @@ public class UserService {
 
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/register")
-    public ResponseEntity registerUser(@RequestBody User user) {
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
 
         if(!inputValidator.isUsernameAndPasswordValid(user)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -53,8 +53,10 @@ public class UserService {
     }
 
     @DeleteMapping("/delete")
-    public void deleteUserById(Long id){
+    public boolean deleteUserById(Long id){
+        if(userRepository.findById(id).isEmpty()) return false;
         userRepository.deleteById(id);
+        return true;
     }
 
     @PatchMapping("/update")

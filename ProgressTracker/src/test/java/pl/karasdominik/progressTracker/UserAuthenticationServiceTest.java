@@ -5,9 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -51,26 +50,31 @@ class UserAuthenticationServiceTest {
 
     @Test
     void testIsUsernameAndPasswordCorrect_whenUserExists_shouldReturnTrue() {
-        User existingUser = new User("existing_username", "password");
-        List<User> userList = new ArrayList<>();
-        userList.add(existingUser);
-        when(userRepository.findAll()).thenReturn(userList);
+        String existingUsername = "existing_username";
+        String existingPassword = "password";
+        User existingUser = new User(existingUsername, existingPassword);
 
-        boolean userExists = userAuthenticationService.isUsernameAndPasswordCorrect(existingUser);
+        String hashedPassword = BCrypt.hashpw(existingPassword, BCrypt.gensalt());
+        existingUser.setPassword(hashedPassword);
+
+        when(userRepository.findByUsername(existingUsername)).thenReturn(Optional.of(existingUser));
+
+        User userToCheck = new User(existingUsername, existingPassword);
+
+        boolean userExists = userAuthenticationService.isUsernameAndPasswordCorrect(userToCheck);
 
         assertTrue(userExists);
-        verify(userRepository, times(1)).findAll();
+        verify(userRepository, times(1)).findByUsername(existingUsername);
     }
 
     @Test
     void testIsUsernameAndPasswordCorrect_whenUserDoesNotExist_shouldReturnFalse() {
         User newUser = new User("new_username", "password");
-        List<User> userList = new ArrayList<>();
-        when(userRepository.findAll()).thenReturn(userList);
+        when(userRepository.findByUsername(newUser.getUsername())).thenReturn(Optional.empty());
 
         boolean userExists = userAuthenticationService.isUsernameAndPasswordCorrect(newUser);
 
         assertFalse(userExists);
-        verify(userRepository, times(1)).findAll();
+        verify(userRepository, times(1)).findByUsername(newUser.getUsername());
     }
 }

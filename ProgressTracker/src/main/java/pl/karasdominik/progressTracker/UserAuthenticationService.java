@@ -1,6 +1,7 @@
 package pl.karasdominik.progressTracker;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -17,6 +18,7 @@ public class UserAuthenticationService {
     }
 
     public boolean isUsernameAndPasswordCorrect(User user){
-        return userRepository.findAll().contains(user);
+        Optional<User> userFromDb = userRepository.findByUsername(user.getUsername());
+        return userFromDb.isPresent() && BCrypt.checkpw(user.getPassword(), userFromDb.get().getPassword());
     }
 }

@@ -3,6 +3,7 @@ package pl.karasdominik.progressTracker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,6 +33,9 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         }
 
+        String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+        user.setPassword(hashedPassword);
+
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
     }
@@ -43,7 +47,7 @@ public class UserService {
         if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 
         if(!userAuthenticationService.isUsernameAndPasswordCorrect(user)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        
+
         return ResponseEntity.ok(user);
 
     }

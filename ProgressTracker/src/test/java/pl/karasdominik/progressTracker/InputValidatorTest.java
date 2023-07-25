@@ -15,7 +15,7 @@ public class InputValidatorTest {
 
     @BeforeClass
     public static void createUser(){
-        user = new User();
+        user = new User("username", "password");
         testedValidator = new InputValidator();
     }
 

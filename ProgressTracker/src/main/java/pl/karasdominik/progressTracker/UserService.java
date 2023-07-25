@@ -42,9 +42,10 @@ public class UserService {
 
         if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 
-        if(userAuthenticationService.isUsernameAndPasswordCorrect(user)) return ResponseEntity.ok(user);
+        if(!userAuthenticationService.isUsernameAndPasswordCorrect(user)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        
+        return ResponseEntity.ok(user);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @GetMapping("/users")

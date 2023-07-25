@@ -20,7 +20,7 @@ class Logging extends Component{
     }
 
     logUser(username, password){
-        fetch('http://localhost:8080/users', {
+        fetch('http://localhost:8080/login', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -32,11 +32,11 @@ class Logging extends Component{
             })
         }).then(function(response){
                 if(response.status === 200){
-                    this.showLoggingAlert("success", "User logged in!", "You can now log in using your credentials");
+                    this.showLoggingAlert("success", "User logged in!", "You have been logged in successfully");
                 } else if (response.status === 422){
-                    this.showLoggingAlert("danger", "User already exists", "Please choose a different name");
+                    this.showLoggingAlert("danger", "Invalid input", "Please try again");
                 } else {
-                    this.showLoggingAlert("danger", "User not registered", "Something went wrong");
+                    this.showLoggingAlert("danger", "Invalid username and/or password", "Please try again");
                 }
             }.bind(this)).catch(function(error){
                 this.showLoggingAlert("danger", "Error!", "Something went wrong");

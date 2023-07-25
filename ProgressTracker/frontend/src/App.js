@@ -7,7 +7,7 @@ import Logging from './Logging.js'
 
 class App extends Component{
   render() {
-    return <Logging />
+    return <Registration />
   }
 }
 

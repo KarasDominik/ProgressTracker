@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button'
 
 import './Registration.css'
 import RegistrationAlert from './RegistrationAlert';
+import Logging from './Logging';
 
 class Registration extends Component{
 
@@ -20,7 +21,7 @@ class Registration extends Component{
     }
 
     registerUser(username, password){
-        fetch('http://localhost:8080/users', {
+        fetch('http://localhost:8080/register', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

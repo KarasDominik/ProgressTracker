@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.karasdominik.progressTracker.LoginController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 public class TrainingService {
@@ -31,10 +30,11 @@ public class TrainingService {
     }
 
     @GetMapping("/getTrainings")
-    public List<Training> getAllTrainings(HttpSession session){
+    public ResponseEntity<List<Training>> getAllTrainings(HttpSession session){
+        if(!loginController.isUserLoggedIn(session)) return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
         Long userLoggedId = loginController.getLoggedUser(session).getUserID();
-        return trainingRepository.findAll().stream()
-                .filter(training -> training.getId_user().equals(userLoggedId))
-                .collect(Collectors.toList());
+        List<Training> listOfTrainings = trainingRepository.findAll().stream()
+                .filter(training -> training.getId_user().equals(userLoggedId)).toList();
+        return ResponseEntity.ok(listOfTrainings);
     }
 }

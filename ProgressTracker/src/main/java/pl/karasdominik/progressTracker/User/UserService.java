@@ -1,4 +1,4 @@
-package pl.karasdominik.progressTracker;
+package pl.karasdominik.progressTracker.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,31 +25,15 @@ public class UserService {
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
 
-        if(!inputValidator.isUsernameAndPasswordValid(user)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
-        if(!userAuthenticationService.isUsernameUnique(user)){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
-        }
+        if(!userAuthenticationService.isUsernameUnique(user)) return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
 
         String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
         user.setPassword(hashedPassword);
 
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser);
-    }
-
-    @CrossOrigin(origins = "http://localhost:3000")
-    @PostMapping("/login")
-    public ResponseEntity<User> logUserIn(@RequestBody User user){
-
-        if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
-
-        if(!userAuthenticationService.isUsernameAndPasswordCorrect(user)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
-        return ResponseEntity.ok(user);
-
     }
 
     @GetMapping("/users")

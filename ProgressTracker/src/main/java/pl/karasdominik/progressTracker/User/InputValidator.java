@@ -1,6 +1,7 @@
-package pl.karasdominik.progressTracker;
+package pl.karasdominik.progressTracker.User;
 
 import org.springframework.stereotype.Component;
+import pl.karasdominik.progressTracker.User.User;
 
 import java.util.regex.Pattern;
 

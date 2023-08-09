@@ -1,4 +1,4 @@
-package pl.karasdominik.progressTracker;
+package pl.karasdominik.progressTracker.User;
 
 import jakarta.persistence.*;
 import lombok.*;

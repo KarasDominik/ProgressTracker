@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import pl.karasdominik.progressTracker.User.*;
 
 import java.util.Optional;
 
@@ -56,31 +57,6 @@ class UserServiceTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(newUser, response.getBody());
-    }
-
-    @Test
-    void testLogUserInWhenCredentialsAreCorrect(){
-        User existingUser = new User("validUsername", "validPassword");
-
-        when(inputValidator.isUsernameAndPasswordValid(existingUser)).thenReturn(true);
-        when(userAuthenticationService.isUsernameAndPasswordCorrect(existingUser)).thenReturn(true);
-
-        ResponseEntity<User> response = userService.logUserIn(existingUser);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(existingUser, response.getBody());
-    }
-
-    @Test
-    void testLogUserInWhenCredentialsAreNotCorrect(){
-        User nonExistingUser = new User("invalidUsername", "invalidPassword");
-
-        when(inputValidator.isUsernameAndPasswordValid(nonExistingUser)).thenReturn(true);
-        when(userAuthenticationService.isUsernameAndPasswordCorrect(nonExistingUser)).thenReturn(false);
-
-        ResponseEntity<User> response = userService.logUserIn(nonExistingUser);
-
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test

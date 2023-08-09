@@ -1,7 +1,8 @@
-package pl.karasdominik.progressTracker;
+package pl.karasdominik.progressTracker.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import pl.karasdominik.progressTracker.User.User;
 
 import java.util.Optional;
 

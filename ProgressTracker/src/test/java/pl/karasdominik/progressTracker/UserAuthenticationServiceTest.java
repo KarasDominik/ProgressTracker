@@ -6,6 +6,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import pl.karasdominik.progressTracker.User.User;
+import pl.karasdominik.progressTracker.User.UserAuthenticationService;
+import pl.karasdominik.progressTracker.User.UserRepository;
 
 import java.util.Optional;
 

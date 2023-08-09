@@ -1,4 +1,4 @@
-package pl.karasdominik.progressTracker;
+package pl.karasdominik.progressTracker.UserTest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

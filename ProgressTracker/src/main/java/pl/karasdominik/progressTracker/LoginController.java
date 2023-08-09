@@ -40,26 +40,33 @@ public class LoginController {
         return ResponseEntity.ok(user);
     }
 
-    public boolean isUserLoggedIn(HttpSession session) {
-        String loggedInUser = (String) session.getAttribute("loggedInUser");
+    public boolean isUserLoggedIn() {
+        String loggedInUser = (String) httpSession.getAttribute("loggedInUser");
         return loggedInUser != null;
     }
 
     @GetMapping("/getLoggedUser")
-    public User getLoggedUser(HttpSession session){
-        String loggedInUser = (String) session.getAttribute("loggedInUser");
+    public User getLoggedUser(){
+        String loggedInUser = (String) httpSession.getAttribute("loggedInUser");
         Optional<User> user = userRepository.findByUsername(loggedInUser);
 
         return user.orElse(null);
     }
 
     @GetMapping("/secured")
-    public ResponseEntity<String> securedPage(HttpSession session) {
-        String loggedInUser = (String) session.getAttribute("loggedInUser");
+    public ResponseEntity<String> securedPage() {
+        String loggedInUser = (String) httpSession.getAttribute("loggedInUser");
         if (loggedInUser != null) {
             return ResponseEntity.ok("You are logged in!");
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You need to log in.");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logUserOut() {
+        httpSession.invalidate();
+
+        return ResponseEntity.ok().build();
     }
 }

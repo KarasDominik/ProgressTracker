@@ -7,8 +7,8 @@ import lombok.*;
 @Table(name = "training")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @RequiredArgsConstructor
 public class Training {
 
@@ -20,4 +20,8 @@ public class Training {
     private Long id_user;
 
     private int distance;
+
+    public Training(int distance) {
+        this.distance = distance;
+    }
 }

@@ -59,7 +59,8 @@ public class UserService {
         }
 
         User existingUser = userFromDb.get();
-        existingUser.setPassword(user.getPassword());
+        String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+        existingUser.setPassword(hashedPassword);
 
         User savedUser = userRepository.save(existingUser);
         return ResponseEntity.ok(savedUser);

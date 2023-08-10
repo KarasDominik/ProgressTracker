@@ -1,4 +1,4 @@
-package pl.karasdominik.progressTracker.Training;
+package pl.karasdominik.progressTracker.Workout;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Training {
+public class Workout {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,7 @@ public class Training {
 
     private int distance;
 
-    public Training(int distance) {
+    public Workout(int distance) {
         this.distance = distance;
     }
 }

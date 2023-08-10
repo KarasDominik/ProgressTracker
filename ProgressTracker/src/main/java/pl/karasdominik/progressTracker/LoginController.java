@@ -53,16 +53,6 @@ public class LoginController {
         return user.orElse(null);
     }
 
-    @GetMapping("/secured")
-    public ResponseEntity<String> securedPage() {
-        String loggedInUser = (String) httpSession.getAttribute("loggedInUser");
-        if (loggedInUser != null) {
-            return ResponseEntity.ok("You are logged in!");
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You need to log in.");
-        }
-    }
-
     @PostMapping("/logout")
     public ResponseEntity<Void> logUserOut() {
         httpSession.invalidate();

@@ -15,12 +15,15 @@ import pl.karasdominik.progressTracker.User.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class WorkoutServiceTest {
+
+    private Workout workout;
+    private User loggedUser;
 
     @Mock
     LoginController loginController;
@@ -34,12 +37,12 @@ class WorkoutServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        workout = new Workout(50);
+        loggedUser = new User(5L, "loggedUser", "password");
     }
 
     @Test
     void testAddWorkoutSessionWhenUserIsNotLoggedIn(){
-        Workout workout = new Workout(5);
-
         when(loginController.isUserLoggedIn()).thenReturn(false);
 
         ResponseEntity<Workout> response = workoutService.addWorkoutSession(workout);
@@ -49,9 +52,6 @@ class WorkoutServiceTest {
 
     @Test
     void testAddWorkoutSessionWhenUserIsLoggedIn(){
-        Workout workout = new Workout(5);
-        User loggedUser = new User(5L, "dominik", "dominik");
-
         when(loginController.isUserLoggedIn()).thenReturn(true);
         when(loginController.getLoggedUser()).thenReturn(loggedUser);
 
@@ -62,8 +62,6 @@ class WorkoutServiceTest {
 
     @Test
     void testGetAllTrainingsWhenUserHasNoTrainingsSaved(){
-        User loggedUser = new User(5L, "dominik", "dominik");
-
         when(loginController.isUserLoggedIn()).thenReturn(true);
         when(loginController.getLoggedUser()).thenReturn(loggedUser);
 
@@ -75,13 +73,10 @@ class WorkoutServiceTest {
 
     @Test
     void testGetAllTrainingsWhenUserHasSomeTrainingsSaved(){
-        User loggedUser = new User(5L, "dominik", "dominik");
-
         when(loginController.isUserLoggedIn()).thenReturn(true);
         when(loginController.getLoggedUser()).thenReturn(loggedUser);
 
         List<Workout> loggedUserWorkouts = new ArrayList<>();
-        Workout workout = new Workout(50);
         workout.setId_user(5L);
         loggedUserWorkouts.add(workout);
         when(workoutRepository.findAll()).thenReturn(loggedUserWorkouts);
@@ -101,6 +96,65 @@ class WorkoutServiceTest {
         verify(workoutRepository, times(1)).deleteById(trainingId);
 
         assertTrue(result);
+    }
+
+    @Test
+    void testDeleteTrainingWhenUserIsNotLoggedIn(){
+        Long trainingId = 5L;
+        when(loginController.isUserLoggedIn()).thenReturn(false);
+
+        boolean result = workoutService.deleteWorkout(trainingId);
+        verify(workoutRepository, times(0)).deleteById(trainingId);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldNotUpdateAnyWorkoutSessionWhenUserIsNotLoggedIn(){
+        when(loginController.isUserLoggedIn()).thenReturn(false);
+        ResponseEntity<Workout> response = workoutService.updateWorkout(workout);
+        
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+    
+    @Test
+    void shouldNotUpdateWorkoutSessionForUserDifferentThanLoggedIn(){
+        workout.setId_user(5L);
+        loggedUser.setUserID(6L);
+
+        when(loginController.isUserLoggedIn()).thenReturn(true);
+        when(workoutRepository.findById(workout.getIdTraining())).thenReturn(Optional.of(workout));
+        when(loginController.getLoggedUser()).thenReturn(loggedUser);
+
+        ResponseEntity<Workout> response = workoutService.updateWorkout(workout);
+
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    void shouldUpdateWorkoutSessionForLoggedUser(){
+        workout.setId_user(loggedUser.getUserID());
+
+        when(loginController.isUserLoggedIn()).thenReturn(true);
+        when(workoutRepository.findById(workout.getIdTraining())).thenReturn(Optional.of(workout));
+        when(loginController.getLoggedUser()).thenReturn(loggedUser);
+
+        ResponseEntity<Workout> response = workoutService.updateWorkout(workout);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    void shouldNotDeleteWorkoutIfNotFound(){
+        workout.setId_user(4L);
+
+        when(loginController.isUserLoggedIn()).thenReturn(true);
+        when(workoutRepository.findById(workout.getIdTraining())).thenReturn(Optional.empty());
+        when(loginController.getLoggedUser()).thenReturn(loggedUser);
+
+        ResponseEntity<Workout> response = workoutService.updateWorkout(workout);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
 }

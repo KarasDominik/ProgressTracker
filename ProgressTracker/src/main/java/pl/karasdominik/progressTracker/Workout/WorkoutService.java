@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.karasdominik.progressTracker.LoginController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class WorkoutService {
@@ -42,20 +43,20 @@ public class WorkoutService {
         return true;
     }
 
-//    @PatchMapping("/updateWorkout")
-//    public ResponseEntity<Workout> updateWorkout(@RequestBody Workout workout){
-//
-//        if(!loginController.isUserLoggedIn()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//
-//        Optional<Workout> optionalWorkoutToUpdate = workoutRepository.findById(workout.getIdTraining());
-//        if(optionalWorkoutToUpdate.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//
-//        Workout workoutToUpdate = optionalWorkoutToUpdate.get();
-//        if(!workoutToUpdate.getId_user().equals(loginController.getLoggedUser().getUserID())) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//
-//        workoutToUpdate.setDistance(workout.getDistance());
-//
-//        Workout savedWorkout = workoutRepository.save(workoutToUpdate);
-//        return ResponseEntity.ok(savedWorkout);
-//    }
+    @PatchMapping("/updateWorkout")
+    public ResponseEntity<Workout> updateWorkout(@RequestBody Workout workout){
+
+        if(!loginController.isUserLoggedIn()) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        Optional<Workout> optionalWorkoutToUpdate = workoutRepository.findById(workout.getIdTraining());
+        if(optionalWorkoutToUpdate.isEmpty()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+
+        Workout workoutToUpdate = optionalWorkoutToUpdate.get();
+        if(!workoutToUpdate.getId_user().equals(loginController.getLoggedUser().getUserID())) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        workoutToUpdate.setDistance(workout.getDistance());
+
+        Workout savedWorkout = workoutRepository.save(workoutToUpdate);
+        return ResponseEntity.ok(savedWorkout);
+    }
 }

@@ -36,19 +36,19 @@ public class UserService {
         return ResponseEntity.ok(savedUser);
     }
 
-    @GetMapping("/users")
-    public List<User> getAll(){
+    @GetMapping("/getUsers")
+    public List<User> getAllUsers(){
         return userRepository.findAll();
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deleteUser")
     public boolean deleteUserById(Long id){
         if(userRepository.findById(id).isEmpty()) return false;
         userRepository.deleteById(id);
         return true;
     }
 
-    @PatchMapping("/update")
+    @PatchMapping("/updateUser")
     public ResponseEntity<User> changeUserPassword(@RequestBody User user){
         if(!inputValidator.isUsernameAndPasswordValid(user)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 
